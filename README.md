@@ -1,5 +1,7 @@
 # GitHub to Gitea Mirror
 
+[![BCH compliance](https://bettercodehub.com/edge/badge/jaw3l/gh2gt?branch=master)](https://bettercodehub.com/)
+
 gh2gt (GitHub to Gitea) is a simple tool that mirrors your own repositories and starred repositories to Gitea.
 
 ## Installation
@@ -19,6 +21,7 @@ gh2gt (GitHub to Gitea) is a simple tool that mirrors your own repositories and 
 
 - Ease the code
 - Shorten the code
+- Add tests
 - Add Docker support
 - Add crontab support
 - Remove GitHubPy dependency and make requests with requests package
