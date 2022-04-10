@@ -4,6 +4,11 @@ gh2gt (GitHub to Gitea) is a simple tool that mirrors your own repositories and 
 
 ## Installation
 
+- Install depencies with `pip install -r requirements.txt`
+- Fill the `src/secrets.py` file
+- If you want to ignore a repo add it to `src/settings.py`
+- Run the python script `py main.py`
+
 ## Features
 
 - Migrates your own repos to Gitea
@@ -12,12 +17,16 @@ gh2gt (GitHub to Gitea) is a simple tool that mirrors your own repositories and 
 
 ## ToDo
 
-- Shorten the code
 - Ease the code
+- Shorten the code
+- Add Docker support
+- Add crontab support
+- Remove GitHubPy dependency and make requests with requests package
 - Make migration process two sided (sync between github and gitea)
+- Add an option to mirroring process (like: do you want to mirror your own repos?)
 - Take command-line arguments
 
-## MightDo
+## MightorMightNotDo
 
 - Intractive mode (wait user input for every repo)
 
