@@ -44,17 +44,10 @@ def gh_get_starred():
 def gt_migrate(full_name):
     """ Migrate a repo from GitHub to Gitea """
     get_repo = gh.get_repo(full_name)
-    
-    repo_name = get_repo.name
-    repo_id = get_repo.id
-    clone_url = get_repo.clone_url
-    repo_desc = get_repo.description
-    repo_topics = get_repo.get_topics()
-    repo_private = get_repo.private
 
     data = {
-        "repo_name": repo_name,
-        "repo_id:": repo_id,
+        "repo_name": get_repo.name,
+        "repo_id:": get_repo.id,
         "mirror": True,
         "issues": True,
         "labels": True,
@@ -62,20 +55,20 @@ def gt_migrate(full_name):
         "milestones": True,
         "pull_requests": True,
         "releases": True,
-        "clone_addr": clone_url,
-        "description": repo_desc}
+        "clone_addr": get_repo.clone_url,
+        "description": get_repo.description}
 
-    if repo_private:
+    if get_repo.private:
         data["auth_username"] = get_repo.owner.login
         data["auth_password"] = gh_token
         data["private"] = True
 
     jsonstring = json.dumps(data)
     session.post(gt_url + "/repos/migrate", data=jsonstring)
-    
-    for topic in repo_topics:
-        gt_put_repo_topics(gt_get_username(), repo_name, topic)
-        print(f"[4/5] Added {topic} topic to {repo_name}")
+
+    for topic in get_repo.get_topics():
+        gt_put_repo_topics(gt_get_username(), get_repo.name, topic)
+        print(f"[4/5] Added {topic} topic to {get_repo.name}")
 
     return True
 
@@ -116,27 +109,27 @@ def gt_put_repo_topics(owner, repo, topic):
 
 def main():
     """ Main function """
-    
+
     if check_gitea():
         print(f"[2/5] Logged in as {gt_get_username()} on Gitea.")
         print(f"[3/5] Logged in as {gh_get_username()} on GitHub.")
 
         # * Check the difference between user repos on Gitea and GitHub and then get the repos from GitHub
         repo_difference = list(set(gh_get_user_repos()) - set(gt_get_user_repos()))
-        
+
         repo_count = len(repo_difference)
         for user_repos in [i for i in gh.get_user().get_repos()]:
             if skip_forks and user_repos.fork:
                 repo_count -= 1
             elif user_repos.name in ignore_list:
                 repo_count -= 1
-        
+
         while repo_count > 0:
             print(f"[4/5] {len(repo_difference)} repos from {gh_get_username()} to migrate.")
             print(f"{repo_difference}")
             # - Migrate the user repositories
             for user_repo in [repo for repo in gh.get_user().get_repos()]:
-                #- Skip forks
+                # - Skip forks
                 if skip_forks and user_repo.fork:
                     print(f"[4/5] Skipping fork {user_repo.full_name}")
                     continue
@@ -160,14 +153,14 @@ def main():
 
             # * If there is no difference between Gitea and GitHub, then check starred repos from GitHub
             star_difference = list(set(gh_get_starred()) - set(gt_get_user_repos()))
-            
+
             star_count = len(star_difference)
             for user_repos in [i for i in gh.get_user().get_starred()]:
                 if skip_forks and user_repos.fork:
                     star_count -= 1
                 elif user_repos.name in ignore_list:
                     star_count -= 1
-                    
+
             while star_count > 0:
                 print(f"[5/5] {len(star_difference)} starred repos to migrate.")
                 # - Migrate the starred repos
